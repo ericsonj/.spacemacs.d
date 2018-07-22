@@ -30,6 +30,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     markdown
      (c-c++ :variables c-c++-enable-clang-support t)
      sql
      ;; ----------------------------------------------------------------
@@ -67,7 +68,8 @@ values."
                                       auto-highlight-symbol
                                       eshell
                                       diff-hl
-                                      skeletor)
+                                      skeletor
+                                      helm-gtags)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -358,10 +360,10 @@ you should place your code here."
 
   (setq vhdl-basic-offset 4)
 
-  (require 'highlight-symbol)
   (setq highlight-symbol-idle-delay 0.5)
 
   (define-key global-map (kbd "C-c ;") 'iedit-mode)
+
   (custom-set-variables
    ;; custom-set-variables was added by Custom.
    ;; If you edit it by hand, you could mess it up, so be careful.
@@ -388,8 +390,6 @@ you should place your code here."
     (diff-hl-mode)
     (diff-hl-flydiff-mode)
     (auto-insert-mode)
-    ;; (hideshowvis-enable)
-    ;; (hideshowvis-symbols)
     )
 
   (defun my-ccpp-program-hook ()
@@ -414,7 +414,9 @@ you should place your code here."
           (define-key map (kbd "C-c t") 'evil-toggle-fold)
           map))
 
-  (skeletor-define-template "ciaa-project")
+  (skeletor-user-config)
+
+  (helm-gtags-user-config)
 
   )
 ;; Do not write anything past this comment. This is where Emacs will
@@ -428,7 +430,7 @@ you should place your code here."
    ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
  '(package-selected-packages
    (quote
-    (virtualenv skeletor yatemplate xterm-color shell-pop org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download multi-term mmm-mode markdown-toc markdown-mode htmlize gnuplot gh-md flyspell-correct-helm flyspell-correct eshell-z eshell-prompt-extras esh-help auto-dictionary fold-this fiplr grizzl origami clang-format aggressive-indent git-gutter highlight-symbol emacsql-mysql sass-mode git yasnippet-snippets iedit google-c-style flymake-google-cpplint flymake-cursor flycheck-google-cpplint auto-complete-c-headers))))
+    (idle-highlight-mode clang-format aggressive-indent git-gutter highlight-symbol emacsql-mysql sass-mode git yasnippet-snippets iedit google-c-style flymake-google-cpplint flymake-cursor flycheck-google-cpplint auto-complete-c-headers))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -436,3 +438,54 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(highlight ((t (:background "azure"))))
  '(highlight-symbol-face ((t (:background "khaki1")))))
+
+
+;; Skeetor-user-config
+(defun skeletor-user-config ()
+
+  (skeletor-define-template "ciaa-project"
+    :no-license? t)
+
+  (skeletor-define-template "ciaa-std-project"
+    :no-license? t)
+
+  (skeletor-define-template "c_project"
+    :no-license? t)
+
+  (skeletor-define-template "vhdl-project"
+    :no-license? t)
+
+  (add-to-list 'skeletor-global-substitutions
+               (cons "__TIME__" (lambda () (format-time-string "%F"))))
+
+  )
+
+(defun helm-gtags-user-config()
+  (setq
+   helm-gtags-ignore-case t
+   helm-gtags-auto-update t
+   helm-gtags-use-input-at-cursor t
+   helm-gtags-pulse-at-cursor t
+   helm-gtags-prefix-key "\C-cg"
+   helm-gtags-suggested-key-mapping t
+   )
+
+  (require 'helm-gtags)
+  ;; Enable helm-gtags-mode
+  (add-hook 'dired-mode-hook 'helm-gtags-mode)
+  (add-hook 'eshell-mode-hook 'helm-gtags-mode)
+  (add-hook 'c-mode-hook 'helm-gtags-mode)
+  (add-hook 'c++-mode-hook 'helm-gtags-mode)
+  (add-hook 'asm-mode-hook 'helm-gtags-mode)
+
+  (define-key helm-gtags-mode-map (kbd "C-S-b") 'helm-gtags-find-tag)
+  (define-key helm-gtags-mode-map (kbd "C-b") 'helm-gtags-find-rtag)
+
+  ;; (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
+  (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+  ;; (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
+  ;; (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
+  ;; (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+  ;; (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
+
+  )
