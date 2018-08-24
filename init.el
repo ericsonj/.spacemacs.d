@@ -30,6 +30,9 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     html
+     javascript
+     typescript
      markdown
      (c-c++ :variables c-c++-enable-clang-support t)
      sql
@@ -69,7 +72,8 @@ values."
                                       eshell
                                       diff-hl
                                       skeletor
-                                      helm-gtags)
+                                      helm-gtags
+                                      hlinum)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -141,9 +145,9 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(tsdh-light
-                         spacemacs-dark
-                         spacemacs-light)
+   dotspacemacs-themes '(spacemacs-dark
+                         spacemacs-light
+                         tsdh-light)
 
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
@@ -331,7 +335,7 @@ you should place your code here."
 
   (setq evil-emacs-state-cursor 'bar)
   (setq-default spacemacs-show-trailing-whitespace nil)
-  
+
   ;;(require 'auto-complete)
   ;;(require 'auto-complete-config)
   
@@ -358,6 +362,8 @@ you should place your code here."
   (global-set-key [(shift f3)] 'highlight-symbol-prev)
   (global-set-key [(meta f3)] 'highlight-symbol-query-replace)
 
+  (spacemacs/toggle-highlight-current-line-globally-off)
+
   (setq vhdl-basic-offset 4)
 
   (setq highlight-symbol-idle-delay 0.5)
@@ -383,7 +389,8 @@ you should place your code here."
   (require 'irony)
 
   (defun my-commons-edit ()
-    (linum-mode))
+    (linum-mode)
+    (hlinum-activate))
 
   (defun my-program-hook ()
     (my-commons-edit)
@@ -418,6 +425,7 @@ you should place your code here."
 
   (helm-gtags-user-config)
 
+
   )
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -428,16 +436,21 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
+ '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
    (quote
-    (idle-highlight-mode clang-format aggressive-indent git-gutter highlight-symbol emacsql-mysql sass-mode git yasnippet-snippets iedit google-c-style flymake-google-cpplint flymake-cursor flycheck-google-cpplint auto-complete-c-headers))))
+    (clang-format aggressive-indent git-gutter highlight-symbol emacsql-mysql sass-mode git yasnippet-snippets iedit google-c-style flymake-google-cpplint flymake-cursor flycheck-google-cpplint auto-complete-c-headers)))
+ '(safe-local-variable-values
+   (quote
+    ((eval setq default-directory
+           (locate-dominating-file buffer-file-name ".dir-locals.el"))))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(highlight ((t (:background "azure"))))
- '(highlight-symbol-face ((t (:background "khaki1")))))
+ '(highlight-symbol-face ((t (:background "light yellow")))))
 
 
 ;; Skeetor-user-config
@@ -447,6 +460,9 @@ you should place your code here."
     :no-license? t)
 
   (skeletor-define-template "ciaa-std-project"
+    :no-license? t)
+
+  (skeletor-define-template "ciaa-std-project-freertos"
     :no-license? t)
 
   (skeletor-define-template "c_project"
