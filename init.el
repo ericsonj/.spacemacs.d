@@ -30,6 +30,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     yaml
      html
      javascript
      typescript
@@ -73,7 +74,10 @@ values."
                                       diff-hl
                                       skeletor
                                       helm-gtags
-                                      hlinum)
+                                      hlinum
+                                      arduino-mode
+                                      gherkin-mode
+                                      ace-window)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -331,17 +335,16 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  (load-file "~/auto-insert-template/auto-insert-template.el")
+  (load-file "~/.emacs.d/auto-insert-template/auto-insert-template.el")
 
   (setq evil-emacs-state-cursor 'bar)
   (setq-default spacemacs-show-trailing-whitespace nil)
 
-  ;;(require 'auto-complete)
-  ;;(require 'auto-complete-config)
   
   ;;(ac-config-default)
   (setq c-default-style "java" c-basic-offset 4)
-  
+  (setq-default tab-width 4)
+
   (require 'yasnippet)
   (yas-global-mode 1)
 
@@ -439,10 +442,24 @@ you should place your code here."
  '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
    (quote
-    (clang-format aggressive-indent git-gutter highlight-symbol emacsql-mysql sass-mode git yasnippet-snippets iedit google-c-style flymake-google-cpplint flymake-cursor flycheck-google-cpplint auto-complete-c-headers)))
+    (gherkin-mode feature-mode clang-format aggressive-indent git-gutter highlight-symbol emacsql-mysql sass-mode git yasnippet-snippets iedit google-c-style flymake-google-cpplint flymake-cursor flycheck-google-cpplint auto-complete-c-headers)))
  '(safe-local-variable-values
    (quote
-    ((eval setq default-directory
+    ((eval setq cmake-ide-build-dir
+           (concat my-project-path ""))
+     (cmake-ide-project-dir . my-project-path)
+     (eval set
+           (make-local-variable
+            (quote my-project-path))
+           (file-name-directory
+            (let
+                ((d
+                  (dir-locals-find-file ".")))
+              (if
+                  (stringp d)
+                  d
+                (car d)))))
+     (eval setq default-directory
            (locate-dominating-file buffer-file-name ".dir-locals.el"))))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -495,7 +512,7 @@ you should place your code here."
   (add-hook 'asm-mode-hook 'helm-gtags-mode)
 
   (define-key helm-gtags-mode-map (kbd "C-S-b") 'helm-gtags-find-tag)
-  (define-key helm-gtags-mode-map (kbd "C-b") 'helm-gtags-find-rtag)
+  ;; (define-key helm-gtags-mode-map (kbd "C-b") 'helm-gtags-find-rtag)
 
   ;; (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
   (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
