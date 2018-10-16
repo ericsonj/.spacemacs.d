@@ -30,6 +30,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     go
      yaml
      html
      javascript
@@ -77,7 +78,8 @@ values."
                                       hlinum
                                       arduino-mode
                                       gherkin-mode
-                                      ace-window)
+                                      ace-window
+                                      go-complete)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -342,8 +344,8 @@ you should place your code here."
 
   
   ;;(ac-config-default)
-  (setq c-default-style "java" c-basic-offset 4)
-  (setq-default tab-width 4)
+  ;; (setq c-default-style "java" c-basic-offset 4)
+  ;; (setq-default tab-width 4)
 
   (require 'yasnippet)
   (yas-global-mode 1)
@@ -352,8 +354,10 @@ you should place your code here."
   ;;  (require 'auto-complete-c-headers)
   ;;  (add-to-list 'ac-sources 'ac-source-c-headers))
 
-  ;; (add-hook 'c++-mode-hook 'my:ac-c-headers-init)
-  ;; (add-hook 'c-mode-hook 'my:ac-c-headers-init)
+  (require 'clang-format)
+  (global-set-key (kbd "C-c i") 'clang-format-region)
+  (global-set-key (kbd "C-c u") 'clang-format-buffer)
+
 
   (use-package highlight-symbol
     :ensure t
@@ -391,8 +395,24 @@ you should place your code here."
 
   (require 'irony)
 
+  (defun my-setup-indent (n)
+    ;; java/c/c++
+    (setq-local c-basic-offset n)
+    ;; web development
+    (setq-local coffee-tab-width n) ; coffeescript
+    (setq-local javascript-indent-level n) ; javascript-mode
+    (setq-local js-indent-level n) ; js-mode
+    (setq-local js2-basic-offset n) ; js2-mode, in latest js2-mode, it's alias of js-indent-level
+    (setq-local web-mode-markup-indent-offset n) ; web-mode, html tag in html file
+    (setq-local web-mode-css-indent-offset n) ; web-mode, css in html file
+    (setq-local web-mode-code-indent-offset n) ; web-mode, js code in html file
+    (setq-local css-indent-offset n) ; css-mode
+    (setq-local go-tab-width n)
+    )
+
   (defun my-commons-edit ()
     (linum-mode)
+    (my-setup-indent 4)
     (hlinum-activate))
 
   (defun my-program-hook ()
@@ -408,10 +428,20 @@ you should place your code here."
     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
     )
 
+  (defun my-go-program-hook ()
+    (my-program-hook)
+    (add-hook 'before-save-hook 'gofmt-before-save)                                                
+    (local-set-key (kbd "M-.") 'godef-jump)
+    (local-set-key (kbd "M-*") 'pop-tag-mark)
+    ;; (indent-tab-mode . t)
+    ;; (tab-width . 4)
+    )
+
   (add-hook 'c++-mode-hook 'my-ccpp-program-hook)
   (add-hook 'c-mode-hook 'my-ccpp-program-hook)
   (add-hook 'vhdl-mode-hook 'my-program-hook)
   (add-hook 'emacs-lisp-mode-hook 'my-program-hook)
+  (add-hook 'go-mode-hook 'my-go-program-hook)
 
   (setq hs-minor-mode-map
         (let ((map (make-sparse-keymap)))
@@ -442,7 +472,7 @@ you should place your code here."
  '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
    (quote
-    (gherkin-mode feature-mode clang-format aggressive-indent git-gutter highlight-symbol emacsql-mysql sass-mode git yasnippet-snippets iedit google-c-style flymake-google-cpplint flymake-cursor flycheck-google-cpplint auto-complete-c-headers)))
+    (go-complete company-go go-guru go-eldoc go-mode gherkin-mode feature-mode clang-format aggressive-indent git-gutter highlight-symbol emacsql-mysql sass-mode git yasnippet-snippets iedit google-c-style flymake-google-cpplint flymake-cursor flycheck-google-cpplint auto-complete-c-headers)))
  '(safe-local-variable-values
    (quote
     ((eval setq cmake-ide-build-dir
@@ -515,7 +545,7 @@ you should place your code here."
   ;; (define-key helm-gtags-mode-map (kbd "C-b") 'helm-gtags-find-rtag)
 
   ;; (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
-  (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+  ;; (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
   ;; (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
   ;; (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
   ;; (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
