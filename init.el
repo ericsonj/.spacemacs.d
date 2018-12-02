@@ -412,8 +412,9 @@ you should place your code here."
 
   (defun my-commons-edit ()
     (linum-mode)
-    (my-setup-indent 4)
-    (hlinum-activate))
+    (setq tab-width 4)
+    (hlinum-activate)
+    )
 
   (defun my-program-hook ()
     (my-commons-edit)
@@ -424,6 +425,7 @@ you should place your code here."
 
   (defun my-ccpp-program-hook ()
     (my-program-hook)
+    (setq-local c-basic-offset 4)
     (irony-mode)
     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
     )
@@ -433,8 +435,14 @@ you should place your code here."
     (add-hook 'before-save-hook 'gofmt-before-save)                                                
     (local-set-key (kbd "M-.") 'godef-jump)
     (local-set-key (kbd "M-*") 'pop-tag-mark)
-    ;; (indent-tab-mode . t)
-    ;; (tab-width . 4)
+    )
+
+  (defun my-makefile-program-hook ()
+    (my-commons-edit)
+    )
+
+  (defun my-verilog-program-hook ()
+    (my-program-hook)
     )
 
   (add-hook 'c++-mode-hook 'my-ccpp-program-hook)
@@ -442,6 +450,8 @@ you should place your code here."
   (add-hook 'vhdl-mode-hook 'my-program-hook)
   (add-hook 'emacs-lisp-mode-hook 'my-program-hook)
   (add-hook 'go-mode-hook 'my-go-program-hook)
+  (add-hook 'makefile-mode-hook 'my-makefile-program-hook)
+  (add-hook 'verilog-mode-hook 'my-verilog-program-hook)
 
   (setq hs-minor-mode-map
         (let ((map (make-sparse-keymap)))
@@ -472,7 +482,7 @@ you should place your code here."
  '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
    (quote
-    (go-complete company-go go-guru go-eldoc go-mode gherkin-mode feature-mode clang-format aggressive-indent git-gutter highlight-symbol emacsql-mysql sass-mode git yasnippet-snippets iedit google-c-style flymake-google-cpplint flymake-cursor flycheck-google-cpplint auto-complete-c-headers)))
+    (clang-format aggressive-indent git-gutter highlight-symbol emacsql-mysql sass-mode git yasnippet-snippets iedit google-c-style flymake-google-cpplint flymake-cursor flycheck-google-cpplint auto-complete-c-headers)))
  '(safe-local-variable-values
    (quote
     ((eval setq cmake-ide-build-dir
@@ -497,7 +507,7 @@ you should place your code here."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(highlight ((t (:background "azure"))))
- '(highlight-symbol-face ((t (:background "light yellow")))))
+ '(highlight-symbol-face ((t (:background "RoyalBlue4")))))
 
 
 ;; Skeetor-user-config
@@ -516,6 +526,9 @@ you should place your code here."
     :no-license? t)
 
   (skeletor-define-template "vhdl-project"
+    :no-license? t)
+
+  (skeletor-define-template "ice40-hx8k-project"
     :no-license? t)
 
   (add-to-list 'skeletor-global-substitutions
